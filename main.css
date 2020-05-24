@@ -2,7 +2,7 @@
     background-color: aquamarine;
     display: flex;
     justify-content: center;
-    position: fixed;
+    position: absolute;
     margin-top: 10%;
     margin-left: 25%;
     border: solid black;
