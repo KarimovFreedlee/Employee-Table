@@ -1,72 +1,121 @@
 const form = document.querySelector('.form');
 const buttonAdd = document.querySelector('.add')
 const editButton = document.querySelector('.editButton')
-const remakeButton = document.querySelector('.remakeButton')
-const deleteButton = document.querySelector('.deleteButton')
 const tableRow = document.querySelectorAll('tbody tr')
 const table = document.querySelector('table')
+
+
+var selectedRow = null
+
 
 buttonAdd.addEventListener('click', () => {
     form.classList.remove('hidden')
 })
 editButton.addEventListener('click', () => {
-    addRow()
+  onFormSubmit()
 })
 editButton.addEventListener('click', () => {
     form.classList.add('hidden')
 })
-remakeButton.addEventListener('click', () => {
-    editHtmlTableSelectedRow()
-})
-remakeButton.addEventListener('click', () => {
-    form.classList.add('hidden')
-})
-deleteButton.addEventListener('click', () => {
-    removeSelectedRow()
-})
 
-function selectedRowToInput(){
-    for(var i = 1; i < table.rows.length; i++){
-        table.rows[i].onclick = function(){
-            // get the seected row index
-            rIndex = this.rowIndex;
-            document.getElementById("name").value = this.cells[1].innerHTML;
-            document.getElementById("secondName").value = this.cells[2].innerHTML;
-            document.getElementById('date')
-            document.getElementById("select").value = this.cells[4].value;
-        };
+
+const min = 150;
+// The max (fr) values for grid-template-columns
+const columnTypeToRatioMap = {
+  numeric: 1,
+  'text-short': 1.67,
+  'text-long': 3.33 };
+
+                                          
+const columns = [];
+let headerBeingResized;
+ 
+// The next three functions are mouse event callbacks
+ 
+// Where the magic happens. I.e. when they're actually resizing
+const onMouseMove = e => requestAnimationFrame(() => {
+  console.log('onMouseMove');
+ 
+  // Calculate the desired width
+  horizontalScrollOffset = document.documentElement.scrollLeft;
+  const width = horizontalScrollOffset + e.clientX - headerBeingResized.offsetLeft;
+ 
+  // Update the column object with the new size value
+  const column = columns.find(({ header }) => header === headerBeingResized);
+  column.size = Math.max(min, width) + 'px'; // Enforce our minimum
+ 
+  // For the other headers which don't have a set width, fix it to their computed width
+  columns.forEach(column => {
+    if (column.size.startsWith('minmax')) {// isn't fixed yet (it would be a pixel value otherwise)
+      column.size = parseInt(column.header.clientWidth, 10) + 'px';
     }
+  });
+ 
+  /* 
+        Update the column sizes
+        Reminder: grid-template-columns sets the width for all columns in one value
+      */
+  table.style.gridTemplateColumns = columns.
+  map(({ header, size }) => size).
+  join(' ');
+});
+ 
+// Clean up event listeners, classes, etc.
+const onMouseUp = () => {
+  console.log('onMouseUp');
+ 
+  window.removeEventListener('mousemove', onMouseMove);
+  window.removeEventListener('mouseup', onMouseUp);
+  headerBeingResized.classList.remove('header--being-resized');
+  headerBeingResized = null;
+};
+ 
+// Get ready, they're about to resize
+const initResize = ({ target }) => {
+  console.log('initResize');
+ 
+  headerBeingResized = target.parentNode;
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
+  headerBeingResized.classList.add('header--being-resized');
+};
+ 
+// Let's populate that columns array and add listeners to the resize handles
+document.querySelectorAll('th').forEach(header => {
+  const max = columnTypeToRatioMap[header.dataset.type] + 'fr';
+  columns.push({
+    header,
+    // The initial size value for grid-template-columns:
+    size: `minmax(${min}px, ${max})` });
+ 
+  header.querySelector('.resize-handle').addEventListener('mousedown', initResize);
+});
+
+// doesn't edit fully
+// only name and second name
+
+// still in progress
+
+function onDelete(td) {
+  if (confirm('Are you sure to delete this record ?')) {
+      row = td.parentElement.parentElement;
+      document.querySelector("table").deleteRow(row.rowIndex);
+      //resetForm();
+  }
 }
 
-function editHtmlTableSelectedRow()
-{
-    var name = document.getElementById("name").value,
-        secondName = document.getElementById("secondName").value
-    table.rows[rIndex].cells[1].innerHTML = name;
-    table.rows[rIndex].cells[2].innerHTML = secondName;
+function onEdit(td) {
+  selectedRow = td.parentElement.parentElement;
+  document.getElementById("name").value = selectedRow.cells[1].innerHTML;
+  document.getElementById("secondName").value = selectedRow.cells[2].innerHTML;
+  document.getElementById("date").value = selectedRow.cells[3].innerHTML;
+  document.getElementById("select").value = selectedRow.cells[4].innerHTML;
+  document.getElementById("distanceWork").value = selectedRow.cells[5].innerHTML;
+  
 }
 
-function removeSelectedRow(){
-    table.deleteRow(rIndex);
-    // clear input text
-    document.getElementById("name").value = "";
-    document.getElementById("secondName").value = "";
-}
-
-function checkEmptyInput(){
-    var isEmpty = false,
-        name = document.getElementById("name").value,
-        secondName = document.getElementById("secondName").value
-            
-    if(name === ""){
-        isEmpty = true;
-    }
-    else if(secondName === ""){
-        isEmpty = true;
-    }
-    return isEmpty;
-}
-
+// add check for another cells
+// totally working
 function getAge(dateString) {
     var today = new Date();
     var birthDate = new Date(dateString);
@@ -78,50 +127,119 @@ function getAge(dateString) {
     return age;
 }
 
-function getFullAddress(querySelector){
-    var address = document.querySelectorAll(querySelector)
-    var fullAddress = ''
-    address.forEach(element => {
-        fullAddress+=element.value+ ' '
-    });
-    return fullAddress
+// totally working
+function getFullAddress(city, street, house, apartament){
+    return fullAddress = `${city} ${street} ${house} ${apartament}`
 }
 
-function addRow(){
-    var tbody = document.getElementById('table').getElementsByTagName("TBODY")[0];
-    var row = document.createElement("TR")
-    var tdFoto = document.createElement("TD")
-    var age = getAge(document.getElementById('date').value)
-    var tdAge = document.createElement("TD")
-    var tdAddress = document.createElement("TD")
-    if(!checkEmptyInput()){
-        tdFoto.appendChild(document.createTextNode('Foto'))
-        tdAge.appendChild(document.createTextNode(age))
-        tdAddress.appendChild(document.createTextNode(getFullAddress('.address')))
-
-        row.appendChild(tdFoto);
-        createRow(row, 'name')
-        createRow(row, 'secondName')
-        createRow(row, 'date')
-        row.appendChild(tdAge)
-        createRow(row, 'select')
-        createRow(row, 'distanceWork')
-        row.appendChild(tdAddress)
-        tbody.appendChild(row);
-        selectedRowToInput();
-    }
-    else alert('заполните все поля');
-    
+function onFormSubmit() {
+  if (validate()) {
+      var data = readFormData();
+      if (selectedRow == null)
+          dataToRow(data);
+      else
+          updateRecord(data);
+      resetForm();
+  }
+  
 }
 
-function createRow(row, id){
-    var current = document.getElementById(id).value
+function updateRecord(data) {
+  selectedRow.cells[1].innerHTML = data.name;
+  selectedRow.cells[2].innerHTML = data.secondName;
+  selectedRow.cells[3].innerHTML = data.date;
+  selectedRow.cells[5].innerHTML = data.select;
+  selectedRow.cells[6].innerHTML = data.distance;
+  selectedRow.cells[7].innerHTML = getFullAddress(data.city, data.street, data.house, data.apartament);
+}
+
+function readFormData() {
+  var data = {};
+  data["name"] = document.getElementById("name").value;
+  data["secondName"] = document.getElementById("secondName").value;
+  data["date"] = document.getElementById("date").value;
+  data["select"] = document.getElementById("select").value;
+  data["distance"] = document.getElementById("distanceWork").checked;
+  data["city"] = document.getElementById("city").value;
+  data["street"] = document.getElementById("street").value;
+  data["house"] = document.getElementById("house").value;
+  data["apartament"] = document.getElementById("apartament").value;
+  
+  console.log(data);
+
+  return data;
+}
+
+function resetForm() {
+  document.getElementById("name").value = "";
+  document.getElementById("secondName").value = "";
+  document.getElementById("city").value = "";
+  document.getElementById("street").value = "";
+  document.getElementById('house').value = '';
+  document.getElementById("apartament").value = "";
+  selectedRow = null;
+}
+
+function dataToRow(data){
+  var tbody = document.getElementById('table').getElementsByTagName("TBODY")[0];
+  var row = document.createElement("TR");
+  var tdFoto = document.createElement("TD");
+  var age = getAge(data.date);
+  var tdAge = document.createElement("TD");
+  var tdAddress = document.createElement("TD");
+  var distance = data.distance;
+  var tdDistance = document.createElement("TD");
+
+  tdFoto.appendChild(document.createTextNode('Foto'))
+  tdAge.appendChild(document.createTextNode(age))
+  tdDistance.appendChild(document.createTextNode(distance))
+  tdAddress.appendChild(document.createTextNode(getFullAddress(data.city, data.street, data.house, data.apartament)))
+  
+
+  row.appendChild(tdFoto);
+  createRow(row, data.name)
+  createRow(row, data.secondName)
+  createRow(row, data.date)
+  row.appendChild(tdAge)
+  createRow(row, data.select)
+  row.appendChild(tdDistance)
+  row.appendChild(tdAddress)
+  cell8 = row.insertCell(8);
+  cell8.innerHTML = `<a class = "editRowButton" onClick="onEdit(this)">Edit</a>
+  <a onClick="onDelete(this)">Delete</a>`;
+  tbody.appendChild(row);
+
+  var editRowButton = document.querySelectorAll(".editRowButton")
+
+  editRowButton.forEach(element => {
+    element.addEventListener("click", () => {
+      form.classList.remove('hidden')
+    })
+  });
+}
+
+// totally working
+function createRow(row, data){
+    var current = data
     var tdId = document.createElement("TD")
     var row = row
     tdId.appendChild(document.createTextNode(current))
     row.appendChild(tdId)
 }
 
+function validate() {
+  isValid = true;
+  if (document.getElementById("name").value == "" || 
+      document.getElementById("secondName").value == "") {
+      isValid = false;
+      alert("заполните все поля!")
+  } else {
+      isValid = true;
+      
+  }
+  return isValid;
+}
+// totally working
 function sortTable(n) {
     var rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     switching = true;

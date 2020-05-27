@@ -11,38 +11,24 @@
 <body>
     <div class = 'header'>
         <input type = 'text'>
-        <div class = 'buttonHolder'>
-            <button class = 'add edit'>Добавить/Редактировать</button>
-            <button class = 'deleteButton'>Удалить</button>
-        </div>
+        <button class = 'add edit'>Добавить</button>
     </div>
     <div class = 'table' id = 'table'>
         <table align = 'center' id = 'table'>
             <thead>
                 <tr>
-                    <th>Превью</th>
-                    <th onclick="sortTable(1)">Имя</th>
-                    <th onclick="sortTable(2)">Фамилия</th>
-                    <th onclick="sortTable(3)">Дата рождения</th>
-                    <th onclick="sortTable(4)">Возраст</th>
-                    <th onclick="sortTable(5)">Должность</th>
-                    <th onclick="sortTable(6)">Удалённая работа</th>
-                    <th onclick="sortTabla(7)">Адрес</th>
+                    <th data-type="numeric">Превью<span class = "resize-handle"></span></th>
+                    <th onclick="sortTable(1)" data-type="text-short">Имя<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(2)" data-type="text-short">Фамилия<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(3)" data-type="text-short">Дата рождения<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(4)" data-type="text-long">Возраст<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(5)" data-type="text-short">Должность<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(6)" data-type="text-short">Удалённая работа<span class="resize-handle"></span></th>
+                    <th onclick="sortTable(7)" data-type="text-short">Адрес<span class="resize-handle"></span></th>
+                    <th data-type="text-short">Удалить/Редактировать<span class = "resize-handle"></span></th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        
-                    </td>
-                    <td>
-                        Иван
-                    </td>
-                    <td>
-                        Иванов
-                    </td>
-                </tr>
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
     <div  class = 'form hidden'>
@@ -62,13 +48,12 @@
                 <label>Удалёнка</label>
             </p>
             <button class = 'editButton'>Добавить</button>
-            <button class = 'remakeButton'>Редактировать</button>
         </div>
         <div class = 'right-part' >
-            <input name = 'city' class = 'address' id='address' type = 'text' placeholder="Город">
-            <p><input name = 'street' class = 'address' id ='address' type = 'text' placeholder="Улица"></p>
-            <p><input name = 'house' class = 'address' id = 'address' type = 'text' placeholder="Дом"></p>
-            <input name = 'apartament' class = 'address' id = 'address' type = 'text' placeholder="Квартира">
+            <input id = 'city' class = 'address' id='address' type = 'text' placeholder="Город">
+            <p><input id = 'street' class = 'address' id ='address' type = 'text' placeholder="Улица"></p>
+            <p><input id = 'house' class = 'address' id = 'address' type = 'text' placeholder="Дом"></p>
+            <input id = 'apartament' class = 'address' id = 'address' type = 'text' placeholder="Квартира">
         </div>   
     </div>
 </body>
