@@ -148,6 +148,7 @@ function updateRecord(data) {
   selectedRow.cells[1].innerHTML = data.name;
   selectedRow.cells[2].innerHTML = data.secondName;
   selectedRow.cells[3].innerHTML = data.date;
+  selectedRow.cells[4].innerHTML = getAge(data.date);
   selectedRow.cells[5].innerHTML = data.select;
   selectedRow.cells[6].innerHTML = data.distance;
   selectedRow.cells[7].innerHTML = getFullAddress(data.city, data.street, data.house, data.apartament);
